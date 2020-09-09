@@ -1,4 +1,4 @@
-# Embeddign Python in C++ Example
+# Embedding Python in C++ Example
 
 Changes to default C/C++ Configuration 
 - Include Path of Python.h Header file "/usr/include/python3.8/**"

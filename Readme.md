@@ -25,3 +25,6 @@ In VSCode Changes to default C/C++ Configuration
 -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm  
 ```
 
+### If compiling with gcc:
+- link standard library to use std `-lstdlb`
+

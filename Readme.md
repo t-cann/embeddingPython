@@ -1,4 +1,4 @@
-# Embedding Python in C++ Examples
+# Embedding Python in C++/QT app Examples
 
 ## List of Examples
 

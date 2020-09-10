@@ -28,3 +28,16 @@ In VSCode Changes to default C/C++ Configuration
 ### If compiling with gcc:
 - link standard library to use std `-lstdlb`
 
+## Issues is Module Search Path
+If module is not in the system modules, there are not found by default.
+
+Either add reequired directory to`PYTHONPATH`enviroment variable. 
+
+or
+```Python
+import os
+import sys
+sys.path.append(os.getcwd())
+```
+
+

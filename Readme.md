@@ -5,7 +5,7 @@
 
 ## List of Other Useful Git Repositories
 
-- pythonqt
+- pythonqt [https://mevislab.github.io/pythonqt]
 - QtConsole
 - Examples_Qt [https://github.com/gammasoft71/Examples_Qt.git]
 

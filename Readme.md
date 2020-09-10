@@ -3,7 +3,10 @@
 ## List of Examples
 
 
+## List of Other Useful Git Repositories
 
+- pythonqt
+- QtConsole
 
 ## Compiler Flags / Where to find them
 In VSCode Changes to default C/C++ Configuration 

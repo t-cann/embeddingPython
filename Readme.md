@@ -1,6 +1,16 @@
-# Embedding Python in C++ Example
+# Embedding Python in C++/QT app Examples
 
-Changes to default C/C++ Configuration 
+## List of Examples
+
+
+## List of Other Useful Git Repositories
+
+- pythonqt [https://mevislab.github.io/pythonqt]
+- QtConsole
+- Examples_Qt [https://github.com/gammasoft71/Examples_Qt.git]
+
+## Compiler Flags / Where to find them
+In VSCode Changes to default C/C++ Configuration 
 - Include Path of Python.h Header file "/usr/include/python3.8/**"
 
 
@@ -14,4 +24,20 @@ Changes to default C/C++ Configuration
 ```
 -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm  
 ```
+
+### If compiling with gcc:
+- link standard library to use std `-lstdlb`
+
+## Issues is Module Search Path
+If module is not in the system modules, there are not found by default.
+
+Either add reequired directory to`PYTHONPATH`enviroment variable. 
+
+or
+```Python
+import os
+import sys
+sys.path.append(os.getcwd())
+```
+
 

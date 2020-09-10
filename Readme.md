@@ -7,6 +7,7 @@
 
 - pythonqt
 - QtConsole
+- Examples_Qt [https://github.com/gammasoft71/Examples_Qt.git]
 
 ## Compiler Flags / Where to find them
 In VSCode Changes to default C/C++ Configuration 

@@ -1,6 +1,12 @@
-# Embedding Python in C++ Example
+# Embedding Python in C++ Examples
 
-Changes to default C/C++ Configuration 
+## List of Examples
+
+
+
+
+## Compiler Flags / Where to find them
+In VSCode Changes to default C/C++ Configuration 
 - Include Path of Python.h Header file "/usr/include/python3.8/**"
 
 

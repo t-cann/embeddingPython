@@ -23,3 +23,8 @@ Initialization
 <built-in function hello>
 >>> test_module.hello
 ```
+
+What does "sid" after args in PyParseTuple mean/do
+type to exspect "String , interger, double".
+
+More Types found at https://docs.python.org/3/c-api/arg.html

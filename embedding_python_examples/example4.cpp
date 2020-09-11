@@ -1,16 +1,16 @@
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> //Must be included before standard headers
-#include <cstdio>
+#include <Python.h>
 
-int
-main(int argc, char *argv[])
+
+/**
+ * @brief Not Finished
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
+int main(int argc, char* argv[])
 {
-    wchar_t *program = Py_DecodeLocale(argv[0], NULL);
-    if (program == NULL) {
-        fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
-        exit(1);
-    }
-
     wchar_t** _argv = (wchar_t **)PyMem_Malloc(sizeof(wchar_t*) * argc);
     for (size_t i = 0; i < argc; i++)
     {
@@ -18,20 +18,17 @@ main(int argc, char *argv[])
         _argv[i] = arg;
     }
 
-    Py_SetProgramName(program);  /* optional but recommended */
     Py_Initialize();
+    PyObject* main_module = PyImport_AddModule("__main__");
 
-    FILE* pFile;
-    
-    pFile = fopen ("helloworld.py","r");
-    if(pFile!=NULL)
-        PyRun_AnyFile(pFile, "helloworld");
-    
+    PyObject* tuple = PyTuple_New(Py_ssize_t);
+    tuple = PyTuple_SetItem();
     Py_Main(argc,_argv);
 
-    if (Py_FinalizeEx() < 0)
+    if (Py_FinalizeEx() < 0) {
         exit(120);
-    
-    PyMem_RawFree(program);
+    }
     return 0;
 }
+
+

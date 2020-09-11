@@ -1,41 +1,27 @@
-#define PY_SSIZE_T_CLEAN
+#define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
 #include <Python.h>
-//References:
-//https://www.linuxjournal.com/article/8497
-//Not finished 
 
-void process_expression(char* filename,
-                        int num,
-                        char* exp[])
-{
-    FILE*       exp_file;
+int ok;
+int i, j;
+long k, l;
+const char *s;
+Py_ssize_t size;
 
-    // Initialize a global variable for
-    // display of expression results
-    PyRun_SimpleString("x = 0");
+ok = PyArg_ParseTuple(args, ""); /* No arguments */
+    /* Python call: f() */
 
-    // Open and execute the file of
-    // functions to be made available
-    // to user expressions
-    exp_file = fopen(filename, "r");
-    PyRun_SimpleFile(exp_file, exp[0]);
-
-    // Iterate through the expressions
-    // and execute them
-    while(num--) {
-        PyRun_SimpleString(*exp++);
-        PyRun_SimpleString("print(x)");
-    }
-}
-
-int main(int argc, char* argv[])
-{
-    Py_Initialize();
-
-    if(argc != 3) {
-        printf("Usage: %s FILENAME EXPRESSION+\n");
-        return 1;
-    }
-    process_expression(argv[1], argc - 1, argv + 2);
-    return 0;
-}
+    // Py_BuildValue("")                                       // None
+    // Py_BuildValue("i", 123)                                 // 123
+    // Py_BuildValue("iii", 123, 456, 789)                     // (123, 456, 789)
+    // Py_BuildValue("s", "hello")                             // 'hello'
+    // Py_BuildValue("y", "hello")                             // b'hello'
+    // Py_BuildValue("ss", "hello", "world")                   // ('hello', 'world')
+    // Py_BuildValue("s#", "hello", 4)                         // 'hell'
+    // Py_BuildValue("y#", "hello", 4)                         // b'hell'
+    // Py_BuildValue("()")                                     // ()
+    // Py_BuildValue("(i)", 123)                               // (123,)
+    // Py_BuildValue("(ii)", 123, 456)                         // (123, 456)
+    // Py_BuildValue("(i,i)", 123, 456)                        // (123, 456)
+    // Py_BuildValue("[i,i]", 123, 456)                        // [123, 456]
+    // Py_BuildValue("{s:i,s:i}", "abc", 123, "def", 456)      // {'abc': 123, 'def': 456}
+    // Py_BuildValue("((ii)(ii)) (ii)", 1, 2, 3, 4, 5, 6)      // (((1, 2), (3, 4)), (5, 6))

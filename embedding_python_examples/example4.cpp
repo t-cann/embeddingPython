@@ -24,15 +24,14 @@ main(int argc, char *argv[])
     FILE* pFile;
     
     pFile = fopen ("helloworld.py","r");
-    if(pFile!=NULL){
-    PyRun_AnyFile(pFile, "helloworld");
-    }
-
+    if(pFile!=NULL)
+        PyRun_AnyFile(pFile, "helloworld");
+    
     Py_Main(argc,_argv);
 
-    if (Py_FinalizeEx() < 0) {
+    if (Py_FinalizeEx() < 0)
         exit(120);
-    }
+    
     PyMem_RawFree(program);
     return 0;
 }

@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     numargs = argc;
     PyImport_AppendInittab("emb", &PyInit_emb);
     
+    argc =1;
     wchar_t** _argv = (wchar_t **)PyMem_Malloc(sizeof(wchar_t*) * argc);
     for (size_t i = 0; i < argc; i++)
     {

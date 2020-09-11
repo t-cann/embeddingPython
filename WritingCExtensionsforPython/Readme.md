@@ -28,3 +28,6 @@ What does "sid" after args in PyParseTuple mean/do
 type to exspect "String , interger, double".
 
 More Types found at https://docs.python.org/3/c-api/arg.html
+
+https://packaging.python.org/guides/packaging-binary-extensions/ 
+Interesting Discussion about 3 reasons you would make a binary extension, disadvantages and alternatives.

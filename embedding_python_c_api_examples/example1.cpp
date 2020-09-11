@@ -15,19 +15,7 @@ main(int argc, char *argv[])
     PyRun_SimpleString("from time import time,ctime\n"
                        "print('Today is', ctime(time()))\n");
  
-    // PyRun_SimpleString(
-    //     "a_foo = None\n"
-    //     "\n"
-    //     "def setup(a_foo_from_cxx):\n"
-    //     "    print 'setup called with', a_foo_from_cxx\n"
-    //     "    global a_foo\n"
-    //     "    a_foo = a_foo_from_cxx\n"
-    //     "\n"
-    //     "def run():\n"
-    //     "    a_foo.doSomething()\n"
-    //     "\n"
-    //     "print 'main module loaded'\n"
-    // );
+
 
     if (Py_FinalizeEx() < 0) {
         exit(120);

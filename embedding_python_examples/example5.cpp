@@ -25,3 +25,17 @@ ok = PyArg_ParseTuple(args, ""); /* No arguments */
     // Py_BuildValue("[i,i]", 123, 456)                        // [123, 456]
     // Py_BuildValue("{s:i,s:i}", "abc", 123, "def", 456)      // {'abc': 123, 'def': 456}
     // Py_BuildValue("((ii)(ii)) (ii)", 1, 2, 3, 4, 5, 6)      // (((1, 2), (3, 4)), (5, 6))
+
+    // PyRun_SimpleString(
+    //     "a_foo = None\n"
+    //     "\n"
+    //     "def setup(a_foo_from_cxx):\n"
+    //     "    print 'setup called with', a_foo_from_cxx\n"
+    //     "    global a_foo\n"
+    //     "    a_foo = a_foo_from_cxx\n"
+    //     "\n"
+    //     "def run():\n"
+    //     "    a_foo.doSomething()\n"
+    //     "\n"
+    //     "print 'main module loaded'\n"
+    // );

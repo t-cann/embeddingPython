@@ -2,6 +2,10 @@
 
 Source https://ishantheperson.github.io/posts/python-c-ext/
 
+```bash
+python3 ./setup.py build
+```
+
 ```Python
 >>> import test_module
 Initialization

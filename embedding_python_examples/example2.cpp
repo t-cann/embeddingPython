@@ -10,16 +10,28 @@ main(int argc, char *argv[])
         fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
         exit(1);
     }
+
+    wchar_t** _argv = (wchar_t **)PyMem_Malloc(sizeof(wchar_t*) * argc);
+    for (size_t i = 0; i < argc; i++)
+    {
+        wchar_t* arg = Py_DecodeLocale(argv[i], NULL);
+        _argv[i] = arg;
+    }
+
     Py_SetProgramName(program);  /* optional but recommended */
     Py_Initialize();
-    PyRun_SimpleString("from time import time,ctime\n"
-                       "print('Today is', ctime(time()))\n");
- 
 
+    FILE* pFile;
+    
+    pFile = fopen ("helloworld.py","r");
+    if(pFile!=NULL)
+        PyRun_AnyFile(pFile, "helloworld");
+    
+    Py_Main(argc,_argv);
 
-    if (Py_FinalizeEx() < 0) {
+    if (Py_FinalizeEx() < 0)
         exit(120);
-    }
+    
     PyMem_RawFree(program);
     return 0;
 }

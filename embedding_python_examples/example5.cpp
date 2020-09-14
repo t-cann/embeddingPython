@@ -1,41 +1,77 @@
-#define PY_SSIZE_T_CLEAN
+#define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
 #include <Python.h>
-//References:
-//https://www.linuxjournal.com/article/8497
-//Not finished 
+// https://docs.python.org/2.0/ext/parseTuple.html
 
-void process_expression(char* filename,
-                        int num,
-                        char* exp[])
-{
-    FILE*       exp_file;
+/**
+ * @brief Program examples of using parseTuple . 
+ * 
+ */
 
-    // Initialize a global variable for
-    // display of expression results
-    PyRun_SimpleString("x = 0");
+int main(int argc, const char* argv[])
+{  
+PyObject* args;
 
-    // Open and execute the file of
-    // functions to be made available
-    // to user expressions
-    exp_file = fopen(filename, "r");
-    PyRun_SimpleFile(exp_file, exp[0]);
+int ok;
+int i, j;
+long k, l;
+char *s;
+int size;
 
-    // Iterate through the expressions
-    // and execute them
-    while(num--) {
-        PyRun_SimpleString(*exp++);
-        PyRun_SimpleString("print(x)");
-    }
+ok = PyArg_ParseTuple(args, ""); /* No arguments */ 
+/* Python call: f() */
+    
+
+ok = PyArg_ParseTuple(args, "s", &s); /* A string */
+    /* Possible Python call: f('whoops!') */
+
+ok = PyArg_ParseTuple(args, "lls", &k, &l, &s); /* Two longs and a string */
+    /* Possible Python call: f(1, 2, 'three') */
+
+ok = PyArg_ParseTuple(args, "(ii)s#", &i, &j, &s, &size);
+    /* A pair of ints and a string, whose size is also returned */
+    /* Possible Python call: f((1, 2), 'three') */
+
+
+char *file;
+const char *mode = "r";
+int bufsize = 0;
+ok = PyArg_ParseTuple(args, "s|si", &file, &mode, &bufsize);
+/* A string, and optionally another string and an integer */
+/* Possible Python calls:
+    f('spam')
+    f('spam', 'w')
+    f('spam', 'wb', 100000) */
+
+
+int left, top, right, bottom, h, v;
+ok = PyArg_ParseTuple(args, "((ii)(ii))(ii)",
+            &left, &top, &right, &bottom, &h, &v);
+/* A rectangle and a point */
+/* Possible Python call:
+    f(((0, 0), (400, 300)), (10, 10)) */
+
+Py_complex c;
+ok = PyArg_ParseTuple(args, "D:myfunction", &c);
+/* a complex, also providing a function name for errors */
+/* Possible Python call: myfunction(1+2j) */
+
+//PyObject* tuple = PyTuple_New();
+//tuple = PyTuple_SetItem();
+return ok;
 }
 
-int main(int argc, char* argv[])
-{
-    Py_Initialize();
+//Example of Better formated Running of Simple String
 
-    if(argc != 3) {
-        printf("Usage: %s FILENAME EXPRESSION+\n");
-        return 1;
-    }
-    process_expression(argv[1], argc - 1, argv + 2);
-    return 0;
-}
+// PyRun_SimpleString(
+//     "a_foo = None\n"
+//     "\n"
+//     "def setup(a_foo_from_cxx):\n"
+//     "    print 'setup called with', a_foo_from_cxx\n"
+//     "    global a_foo\n"
+//     "    a_foo = a_foo_from_cxx\n"
+//     "\n"
+//     "def run():\n"
+//     "    a_foo.doSomething()\n"
+//     "\n"
+//     "print 'main module loaded'\n"
+// );

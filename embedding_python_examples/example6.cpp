@@ -1,28 +1,50 @@
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+#define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
+#include <Python.h> //Must be included before standard headers
 
-//Not Finished
+// https://docs.python.org/3/extending/extending.html#calling-python-functions-from-c
+// NOT Finished
+// TODO How to register this function with the interpreter using the METH_VARARGS flag;
 
-int main(int argc, char* argv[])
+static PyObject *my_callback = NULL;
+
+static PyObject *
+my_set_callback(PyObject *dummy, PyObject *args)
 {
-    wchar_t** _argv = (wchar_t **)PyMem_Malloc(sizeof(wchar_t*) * argc);
-    for (size_t i = 0; i < argc; i++)
-    {
-        wchar_t* arg = Py_DecodeLocale(argv[i], NULL);
-        _argv[i] = arg;
+    PyObject *result = NULL;
+    PyObject *temp;
+
+    if (PyArg_ParseTuple(args, "O:set_callback", &temp)) {
+        if (!PyCallable_Check(temp)) {
+            PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+            return NULL;
+        }
+        Py_XINCREF(temp);         /* Add a reference to new callback */
+        Py_XDECREF(my_callback);  /* Dispose of previous callback */
+        my_callback = temp;       /* Remember new callback */
+        /* Boilerplate to return "None" */
+        Py_INCREF(Py_None);
+        result = Py_None;
     }
-
-    Py_Initialize();
-    PyObject* main_module = PyImport_AddModule("__main__");
-
-    PyObject* tuple = PyTuple_New(Py_ssize_t);
-    tuple = PyTuple_SetItem();
-    Py_Main(argc,_argv);
-
-    if (Py_FinalizeEx() < 0) {
-        exit(120);
-    }
-    return 0;
+    return result;
 }
+/**
+ * @brief  Calling Python FUnctions from C Example
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
+int main(int argc, const char* argv[])
+{  
 
+int arg;
+PyObject *arglist;
+PyObject *result;
+arg = 123;
 
+/* Time to call the callback */
+arglist = Py_BuildValue("(i)", arg);
+result = PyObject_CallObject(my_callback, arglist);
+Py_DECREF(arglist);
+
+}

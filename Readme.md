@@ -8,14 +8,14 @@
 - pythonqt [https://mevislab.github.io/pythonqt]
 - QtConsole
 - Examples_Qt [https://github.com/gammasoft71/Examples_Qt.git]
+- numpy-c-api Examples [https://github.com/AlexanderFabisch/numpy-c-api]
+
 
 Binding and Wrapping 
 - SWIG
 - PyBind
 - Boost
 
-Numpy-c-api Examples 
-- https://github.com/AlexanderFabisch/numpy-c-api
 
 ## Compiler Flags / Where to find them
 In VSCode Changes to default C/C++ Configuration 

@@ -13,6 +13,10 @@ Binding and Wrapping
 - SWIG
 - PyBind
 - Boost
+
+Numpy-c-api Examples 
+- https://github.com/AlexanderFabisch/numpy-c-api
+
 ## Compiler Flags / Where to find them
 In VSCode Changes to default C/C++ Configuration 
 - Include Path of Python.h Header file "/usr/include/python3.8/**"

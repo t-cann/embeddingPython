@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 def multiply(a,b):
     print("Will compute", a, "times", b)
     c = 0

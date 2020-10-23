@@ -2,7 +2,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
 #include <numpy/arrayobject.h>
-#include<iostream>
+#include <iostream>
 
 //References:
 //https://stackoverflow.com/questions/30388170/sending-a-c-array-to-python-and-back-extending-c-with-numpy/57194785
@@ -23,8 +23,10 @@ int main(int argc, char* argv[])
     wchar_t* program = Py_DecodeLocale(argv[0], NULL);
     Py_SetProgramName(program);
     Py_Initialize();
-    import_array();
-
+    if(_import_array()<0){
+        return -1;
+    }
+        
 
     // Build the 2D array in C++
     const int SIZE = 10;

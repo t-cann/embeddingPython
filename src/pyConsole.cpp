@@ -1,5 +1,5 @@
 //#define NPY_NO_DEPRECATED_API  NPY_1_9_API_VERSION //TODO Resolve issue with old api files but frames python os ??? https://numpy.org/devdocs/reference/c-api/deprecations.html
-#include "pyConsole.hpp"
+#include "pyConsole.h"
 // #include <numpy/arrayobject.h>
 
 // References:

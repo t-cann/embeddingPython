@@ -3,18 +3,24 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <iostream>
+#include <vector>
 #include <gtest/gtest.h>
+
+
 
 TEST(Numpy_API_Tests, init)
 {
+
     wchar_t* program = Py_DecodeLocale("init", NULL);
     Py_SetProgramName(program);
-    Py_Initialize();
-    if(_import_array()<0){
-        ASSERT_TRUE(false);
-    }
-        
 
+    Py_Initialize();
+    if(PyArray_API == NULL)
+    {
+        _import_array(); 
+    }
+ 
+    
     // Build the 2D array in C++
     const int SIZE = 10;
     npy_intp dims[2]{SIZE, SIZE};
@@ -24,7 +30,7 @@ TEST(Numpy_API_Tests, init)
         for (int j = 0; j < SIZE; j++)
             c_arr[i][j] = i * SIZE + j;
 
-    ASSERT_FALSE(c_arr == NULL);
+    ASSERT_TRUE(c_arr != NULL);
     // std::cout << "Finish Creating 2D Array in C++" << std::endl;
 
     // Outputing to Console
@@ -32,7 +38,7 @@ TEST(Numpy_API_Tests, init)
     //     for(int j = SIZE -1; j>=0; j--){
     //         std::cout << c_arr[i][0] << " ";
     //     }
-    //     //std::cout << std::endl;
+    //     std::cout << std::endl;
     // }   
     
 
@@ -40,7 +46,7 @@ TEST(Numpy_API_Tests, init)
     PyObject *pArray = PyArray_SimpleNewFromData(ND, dims, NPY_LONGDOUBLE, reinterpret_cast<void*>(c_arr));
     // std::cerr << &pArray;
     ASSERT_NE(pArray, nullptr) ;
-    // PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(pArray); //NOt Used ??
+    // PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(pArray); //Not Used. only recasting varible into PyArrayObject type which might enable extra functions.
 
     // std::cout << "Converted to Numpy Array" << std::endl;
 
@@ -48,6 +54,7 @@ TEST(Numpy_API_Tests, init)
     const char *module_name = "mymodule";
     PyObject *pName = PyUnicode_FromString(module_name);
     PyObject* pModule = PyImport_Import(pName);
+    ASSERT_TRUE(pModule != NULL) << "Error importing module -- Check Module is compiled and in PYTHONPATH";
     const char *func_name = "array_tutorial";
     PyObject *pFunc = PyObject_GetAttrString( pModule , func_name);
     if(pFunc == NULL){
@@ -65,17 +72,67 @@ TEST(Numpy_API_Tests, init)
     int len = PyArray_SHAPE(np_ret)[0];
     long double* c_out;
     c_out = reinterpret_cast<long double*>(PyArray_DATA(np_ret));
-    std::cout << "Printing output array" << std::endl;
-    for (int i = 0; i < len; i++)
-        std::cout << c_out[i] << ' ';
-    std::cout << std::endl;
+    // std::cout << "Printing output array" << std::endl;
+    // for (int i = 0; i < len; i++)
+    //     std::cout << c_out[i] << ' ';
+    // std::cout << std::endl;
     
-    // result = EXIT_SUCCESS;
 
     if(PyErr_Occurred()){
         PyErr_Print();  
     }
-    Py_FinalizeEx();
-    
-    // return result;
+    if (Py_FinalizeEx() < 0)
+    {
+        exit(120);
+    }
+
+    PyMem_RawFree(program);
+
 }
+
+
+TEST(Numpy_API_Tests, PyArray_NewFromData_Test)
+{
+    wchar_t* program = Py_DecodeLocale("ArrayfromData", NULL);
+    Py_SetProgramName(program);
+
+    Py_Initialize();
+    if(PyArray_API == NULL)
+    {
+        _import_array(); //https://stackoverflow.com/questions/32899621/numpy-capi-error-with-import-array-when-compiling-multiple-modules
+    }
+ 
+    // const int ND = 2;
+    // const int SIZE = 10;
+    // npy_intp dims[2]{SIZE, SIZE};
+    // int typeint = NPY_DOUBLE; // https://numpy.org/doc/stable/reference/c-api/dtype.html#c.NPY_FLOAT
+    // void* data; 
+    // PyArray_SimpleNewFromData();
+
+    // array dimensions
+    npy_intp dim[] = {5, 5};
+
+    // array data
+    std::vector<double> buffer(25, 1.0);
+
+    // create a new array using 'buffer'
+    PyObject* array_2d = PyArray_SimpleNewFromData(2, dim, NPY_DOUBLE, &buffer[0]);
+
+    ASSERT_TRUE( PyArray_Check(array_2d));
+
+    Py_Finalize();
+}
+
+
+
+// Testing Advance GoogleTest Features 
+
+// int main(int argc, char** argv) {
+//   // Disables elapsed time by default.
+//   ::testing::GTEST_FLAG(print_time) = false;
+
+//   // This allows the user to override the flag on the command line.
+//   ::testing::InitGoogleTest(&argc, argv);
+
+//   return RUN_ALL_TESTS();
+// }

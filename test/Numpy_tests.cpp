@@ -6,20 +6,40 @@
 #include <vector>
 #include <gtest/gtest.h>
 
-
-
-TEST(Numpy_API_Tests, init)
+/* Fixture for lots of similar test */
+struct NumpyAPITests : public ::testing::Test
 {
+    wchar_t *program;
 
-    wchar_t* program = Py_DecodeLocale("init", NULL);
-    Py_SetProgramName(program);
-
-    Py_Initialize();
-    if(PyArray_API == NULL)
+    virtual void SetUp() override
     {
-        _import_array(); 
+        // printf("Starting Up!\n");
+        program = Py_DecodeLocale(::testing::UnitTest::GetInstance()->current_test_info()->name(), NULL);
+        Py_SetProgramName(program); /* optional but recommended */
+        Py_Initialize();
+        if(PyArray_API == NULL)
+        {
+            _import_array(); //https://stackoverflow.com/questions/32899621/numpy-capi-error-with-import-array-when-compiling-multiple-modules
+        }
     }
- 
+
+    virtual void TearDown() override
+    {
+        // printf("Tearing Down!\n");
+        if(PyErr_Occurred()){
+            PyErr_Print();  
+        }
+        if (Py_FinalizeEx() < 0)
+        {
+            exit(120);
+        }
+        Py_Finalize();
+        PyMem_RawFree(program);
+    }
+};
+
+TEST_F(NumpyAPITests, init)
+{
     
     // Build the 2D array in C++
     const int SIZE = 10;
@@ -76,38 +96,11 @@ TEST(Numpy_API_Tests, init)
     // for (int i = 0; i < len; i++)
     //     std::cout << c_out[i] << ' ';
     // std::cout << std::endl;
-    
-
-    if(PyErr_Occurred()){
-        PyErr_Print();  
-    }
-    if (Py_FinalizeEx() < 0)
-    {
-        exit(120);
-    }
-
-    PyMem_RawFree(program);
 
 }
 
-
-TEST(Numpy_API_Tests, PyArray_NewFromData_Test)
+TEST_F(NumpyAPITests, PyArray_NewFromData_Test)
 {
-    wchar_t* program = Py_DecodeLocale("ArrayfromData", NULL);
-    Py_SetProgramName(program);
-
-    Py_Initialize();
-    if(PyArray_API == NULL)
-    {
-        _import_array(); //https://stackoverflow.com/questions/32899621/numpy-capi-error-with-import-array-when-compiling-multiple-modules
-    }
- 
-    // const int ND = 2;
-    // const int SIZE = 10;
-    // npy_intp dims[2]{SIZE, SIZE};
-    // int typeint = NPY_DOUBLE; // https://numpy.org/doc/stable/reference/c-api/dtype.html#c.NPY_FLOAT
-    // void* data; 
-    // PyArray_SimpleNewFromData();
 
     // array dimensions
     npy_intp dim[] = {5, 5};
@@ -117,12 +110,66 @@ TEST(Numpy_API_Tests, PyArray_NewFromData_Test)
 
     // create a new array using 'buffer'
     PyObject* array_2d = PyArray_SimpleNewFromData(2, dim, NPY_DOUBLE, &buffer[0]);
+    PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(array_2d);
 
-    ASSERT_TRUE( PyArray_Check(array_2d));
+    // https://gist.github.com/maartenbreddels/82a3778c9a79b7ef048e inspiration for tests.
 
-    Py_Finalize();
+    ASSERT_TRUE(array_2d != NULL);                      //Checks Object is not NULL e.g. Created/Defined.
+    ASSERT_TRUE( PyArray_Check(array_2d));              //Checks Object is PyArray Type
+    ASSERT_TRUE((int)PyArray_NDIM(np_arr) == 2 );       //Checks Object is 2 Dimensional as defined. 
+    ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_DOUBLE );   //Checks the type of the object is correct. 
+
+
+    //Don't understand Strides. 
+
 }
 
+
+TEST_F(NumpyAPITests, PyArray_SimpleNewFromData_Test)
+{
+
+    const int ND = 2;
+    const int SIZE = 10;
+    npy_intp dims[2]{SIZE, SIZE};
+    int typeint = NPY_DOUBLE; // https://numpy.org/doc/stable/reference/c-api/dtype.html#c.NPY_FLOAT
+    void* data;
+
+    PyObject *pArray = PyArray_SimpleNewFromData(ND, dims, NPY_LONGDOUBLE, reinterpret_cast<void*>(data));
+    PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(pArray);
+    ASSERT_TRUE(pArray != NULL);                      //Checks Object is not NULL e.g. Created/Defined.
+    ASSERT_TRUE( PyArray_Check(pArray));              //Checks Object is PyArray Type
+    ASSERT_TRUE((int)PyArray_NDIM(np_arr) == 2 );       //Checks Object is 2 Dimensional as defined. 
+    ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_LONGDOUBLE );   //Checks the type of the object is correct. 
+
+}
+
+TEST_F(NumpyAPITests, Types_Test)
+{
+    bool x = true;
+}
+
+TEST_F(NumpyAPITests, PyArray_Dims_Test)
+{
+    // PyArray_Dims
+
+    // This structure is very useful when shape and/or strides information is supposed to be interpreted. The structure is:
+
+    // typedef struct {
+    //     npy_intp *ptr;
+    //     int len;
+    // } PyArray_Dims;
+
+    // The members of this structure are
+
+    // npy_intp *PyArray_Dims.ptr
+
+    //     A pointer to a list of (npy_intp) integers which usually represent array shape or array strides.
+
+    // int PyArray_Dims.len
+
+    //     The length of the list of integers. It is assumed safe to access ptr [0] to ptr [len-1].
+
+}
 
 
 // Testing Advance GoogleTest Features 

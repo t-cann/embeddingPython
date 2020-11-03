@@ -1,49 +1,63 @@
 #define PY_SSIZE_T_CLEAN
 
 #include <Python.h>
-
-#include <string>  // Require for
-
+#include <string>   // Require for
 #include <iostream> // Require for
-#include <fstream>
-
+#include <fstream>  // Require for
 #include <gtest/gtest.h>
 
-TEST(Python_C_API_Tests /*test suite name*/, DemoTest /*test name*/)
+/* Fixture for lots of similar test */
+struct Python_C_API_Tests : public ::testing::Test
 {
-    EXPECT_TRUE(true) << "Hello, world!";
-}
-
-TEST(Python_C_API_Tests, Py_Initialise_Test)
-{
-
-    int argc = 1;
-    const char *argv[] = {"Py_Initialise_Test", NULL};
-
-    wchar_t *program = Py_DecodeLocale(argv[0], NULL);
-    ASSERT_TRUE(program != NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
-
-    // PyRun_SimpleString("from time import time,ctime\n"
-    //                    "print('Today is', ctime(time()))\n");
-
-    if (Py_FinalizeEx() < 0)
+    wchar_t *program;
+   
+    virtual void SetUp() override
     {
-        exit(120);
+        // printf("Starting Up!\n");
+        program = Py_DecodeLocale(::testing::UnitTest::GetInstance()->current_test_info()->name(), NULL);
+        Py_SetProgramName(program); /* optional but recommended */
+        Py_Initialize();
     }
-    PyMem_RawFree(program);
+
+    virtual void TearDown() override
+    {
+        // printf("Tearing Down!\n");
+        if(PyErr_Occurred()){
+            PyErr_Print();  
+        }
+        // if (Py_FinalizeEx() < 0)
+        // {
+        //     exit(120);
+        // }
+        Py_Finalize();
+        PyMem_RawFree(program);
+    }
+};
+
+TEST_F(Python_C_API_Tests, Py_Initialise_Test)
+{
+    // int argc = 1;
+    // const char *argv[] = {"Py_Initialise_Test", NULL};
+    // wchar_t *program = Py_DecodeLocale(argv[0], NULL);
+    // ASSERT_TRUE(program != NULL);
+    // Py_SetProgramName(program);
+    // Py_Initialize();
+
+    PyRun_SimpleString("from time import time,ctime\n"
+                       "print('Today is', ctime(time()))\n");
+
+    // if (Py_FinalizeEx() < 0)
+    // {
+    //     exit(120);
+    // }
+    // PyMem_RawFree(program);
 
 }
 
-TEST(Python_C_API_Tests, PyRun_SimpleString_Test)
+TEST_F(Python_C_API_Tests, PyRun_SimpleString_Test)
 {
 
     const char *inputs[] = {"int = 10", "double = 3.14", "string = 'Thomas'"};
-
-    wchar_t *program = Py_DecodeLocale("PyRun_SimpleString_Test", NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
 
     PyRun_SimpleString(inputs[0]);
     PyRun_SimpleString(inputs[1]);
@@ -75,14 +89,10 @@ TEST(Python_C_API_Tests, PyRun_SimpleString_Test)
     Py_XDECREF(d);
     Py_XDECREF(s);
 
-    if (Py_FinalizeEx() < 0)
-    {
-        exit(120);
-    }
-    PyMem_RawFree(program);
+
 }
 
-TEST(Python_C_API_Tests, PyRun_SimpleFile_Test)
+TEST_F(Python_C_API_Tests, PyRun_SimpleFile_Test)
 {
 
     std::ofstream myfile;
@@ -95,10 +105,6 @@ TEST(Python_C_API_Tests, PyRun_SimpleFile_Test)
 
 
     const char *inputs[] = {"int = 10", "double = 3.14", "string = 'Thomas'"};
-
-    wchar_t *program = Py_DecodeLocale("PyRun_SimpleFile_Test", NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
 
     FILE* pFile;
     
@@ -132,25 +138,19 @@ TEST(Python_C_API_Tests, PyRun_SimpleFile_Test)
     Py_XDECREF(d);
     Py_XDECREF(s);
 
-    if (Py_FinalizeEx() < 0)
-    {
-        exit(120);
-    }
-    PyMem_RawFree(program);
     remove("test.py");
 }
 
-TEST(Python_C_API_Tests, Python_C_API_Memory_Test)
+//Work in Progress Below
+
+TEST_F(Python_C_API_Tests, Python_C_API_Memory_Test)
 {
     //TODO
     EXPECT_TRUE(true);
 }
 
-TEST(Python_C_API_Tests, PyBuildValue_Test)
+TEST_F(Python_C_API_Tests, PyBuildValue_Test)
 {
-    wchar_t *program = Py_DecodeLocale("PyBuildValue_Test", NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
 
     PyObject *m;
     m = PyImport_AddModule("__main__");
@@ -205,42 +205,9 @@ TEST(Python_C_API_Tests, PyBuildValue_Test)
 
 
     Py_XDECREF(m);
-    
-    if (Py_FinalizeEx() < 0)
-    {
-        exit(120);
-    }
-    PyMem_RawFree(program);
 }
 
-TEST(Python_C_API_Tests, Arrays_to_Python_Test)
-{
-    
-}
-
-/* Fixture for lots of similar test */
-struct PythonCAPITests : public ::testing::Test
-{
-    wchar_t *program;
-    int *x;
-
-    int GetX()
-    {
-        return *x;
-    }
-    virtual void SetUp() override
-    {
-        printf("Starting Up!\n");
-        program = Py_DecodeLocale("PythonC-API_test", NULL);
-        Py_SetProgramName(program); /* optional but recommended */
-        Py_Initialize();
-        x = new int(42);
-    }
-
-    virtual void TearDown() override
-    {
-        printf("Tearing Down!\n");
-        delete x;
-        PyMem_RawFree(program);
-    }
-};
+// TEST_F(Python_C_API_Tests, Arrays_to_Python_Test)
+// {
+//     EXPECT_TRUE(true);
+// }

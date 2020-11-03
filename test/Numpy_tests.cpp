@@ -101,14 +101,17 @@ TEST_F(NumpyAPITests, init)
 
 }
 
-TEST_F(NumpyAPITests, PyArray_NewFromData_Test)
+TEST_F(NumpyAPITests, PyArray_NewFromData_withvector_Test)
 {
 
     // array dimensions
     npy_intp dim[] = {5, 5};
 
     // array data
-    std::vector<double> buffer(25, 1.0);
+    // double a[] = {25,1.0};
+    // std::vector<double> *buffer = new std::vector<double>;
+    // buffer->assign(a,a+2);
+    std::vector<double> buffer(25,1.0);
 
     // create a new array using 'buffer'
     PyObject* array_2d = PyArray_SimpleNewFromData(2, dim, NPY_DOUBLE, &buffer[0]);
@@ -121,11 +124,53 @@ TEST_F(NumpyAPITests, PyArray_NewFromData_Test)
     ASSERT_TRUE((int)PyArray_NDIM(np_arr) == 2 );       //Checks Object is 2 Dimensional as defined. 
     ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_DOUBLE );   //Checks the type of the object is correct. 
 
-
     //Don't understand Strides. 
+
+    double* c_out = reinterpret_cast<double*>(PyArray_DATA(np_arr));
+    EXPECT_TRUE(c_out[0]=25)<< c_out[0];
+    EXPECT_TRUE(c_out[1]==1.0) << c_out[1]; //Issue with understand of Buffers and Memory Allocation
+    buffer.clear();
+    // std::cout << "After buffer/data is deleted Numpy Array double go to " << c_out[0] << std::endl;
+    // EXPECT_FALSE(c_out[0] == 25)<< c_out[0]; // TODO does not work
+    // EXPECT_FALSE(c_out[1] == 1.0) << c_out[1];
+
 
 }
 
+TEST_F(NumpyAPITests, PyArray_NewFromData_witharray_Test)
+{
+    // array dimensions
+    npy_intp dim[] = {5, 5};
+
+    // array data
+    double* buffer = new double[1];
+    buffer[0] = 25;
+    buffer[1] = 1.0;
+
+    // create a new array using 'buffer'
+    PyObject* array_2d = PyArray_SimpleNewFromData(2, dim, NPY_DOUBLE, &buffer[0]);
+    PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(array_2d);
+
+    // https://gist.github.com/maartenbreddels/82a3778c9a79b7ef048e inspiration for tests.
+
+    ASSERT_TRUE(array_2d != NULL);                      //Checks Object is not NULL e.g. Created/Defined.
+    ASSERT_TRUE( PyArray_Check(array_2d));              //Checks Object is PyArray Type
+    ASSERT_TRUE((int)PyArray_NDIM(np_arr) == 2 );       //Checks Object is 2 Dimensional as defined. 
+    ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_DOUBLE );   //Checks the type of the object is correct. 
+
+    //Don't understand Strides. 
+
+    double* c_out = reinterpret_cast<double*>(PyArray_DATA(np_arr));
+    // EXPECT_TRUE(c_out[0]==buffer[0]);
+    // EXPECT_TRUE(c_out[1]==buffer[1]);
+    EXPECT_TRUE(c_out[0] == 25)<< c_out[0];
+    EXPECT_TRUE(c_out[1] == 1.0) << c_out[1]; 
+
+    delete(buffer);
+    std::cout << "After buffer/data is deleted Numpy Array double go to " << c_out[0] << std::endl;
+    EXPECT_FALSE(c_out[0] == 25)<< c_out[0]; // 
+    EXPECT_FALSE(c_out[1] == 1.0) << c_out[1];
+}
 
 TEST_F(NumpyAPITests, PyArray_SimpleNewFromData_Test)
 {
@@ -147,6 +192,80 @@ TEST_F(NumpyAPITests, PyArray_SimpleNewFromData_Test)
     ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_LONGDOUBLE );   //Checks the type of the object is correct. 
 
 }
+
+TEST_F(NumpyAPITests, PyArray_Copy_Test)
+{
+    // array dimensions
+    npy_intp dim[] = {2};
+
+    // array data
+    double* buffer = new double[1];
+    buffer[0] = 25;
+    buffer[1] = 1.0;
+
+    // create a new array using 'buffer'
+    PyObject* array_2d = PyArray_SimpleNewFromData(1, dim, NPY_DOUBLE, &buffer[0]);
+    PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(array_2d);
+    PyObject* copy_arr = PyArray_Copy(np_arr);
+    PyArrayObject* npcopy_arr = reinterpret_cast<PyArrayObject*>(copy_arr);
+
+    double* c_out = reinterpret_cast<double*>(PyArray_DATA(npcopy_arr));
+    // EXPECT_TRUE(c_out[0]==buffer[0]);
+    // EXPECT_TRUE(c_out[1]==buffer[1]);
+    EXPECT_TRUE(c_out[0] == 25)<< c_out[0];
+    EXPECT_TRUE(c_out[1] == 1.0) << c_out[1]; 
+
+    delete(buffer);
+    // std::cout << "After buffer/data is deleted Numpy Array double go to " << c_out[0] << std::endl;
+    EXPECT_TRUE(c_out[0] == 25)<< c_out[0]; // 
+    EXPECT_TRUE(c_out[1] == 1.0) << c_out[1];
+
+
+}
+
+TEST_F(NumpyAPITests, Arrays_to_Python_Test)
+{
+    PyObject *m;
+    m = PyImport_AddModule("__main__");
+    
+    // array
+    npy_intp dim[] = {2};
+    double* buffer = new double[1];
+    buffer[0] = 25;
+    buffer[1] = 1.0;
+
+    // create a new array using 'buffer'
+    PyObject* array = PyArray_SimpleNewFromData(1, dim, NPY_DOUBLE, &buffer[0]);
+    PyArrayObject *np_arr_tocopy = reinterpret_cast<PyArrayObject*>(array);
+    PyObject* py_copy= PyArray_Copy(np_arr_tocopy);
+
+    PyObject_SetAttrString(m, "move", array);
+    PyObject_SetAttrString(m, "copy", py_copy);
+
+    PyObject *move = PyObject_GetAttrString(m, "move");
+    PyObject *copy = PyObject_GetAttrString(m, "copy");
+    
+    PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(move);
+
+    double* c_out_move = reinterpret_cast<double*>(PyArray_DATA(np_arr));
+    EXPECT_TRUE(c_out_move[0] == 25)<< c_out_move[0];
+    EXPECT_TRUE(c_out_move[1] == 1.0) << c_out_move[1]; 
+
+    delete(buffer);
+    // std::cout << "After buffer/data is deleted Numpy Array double go to " << c_out[0] << std::endl;
+    EXPECT_FALSE(c_out_move[0] == 25)<< c_out_move[0]; // 
+    EXPECT_FALSE(c_out_move[1] == 1.0) << c_out_move[1];
+
+    PyArrayObject *np_arr_copy = reinterpret_cast<PyArrayObject*>(copy);
+
+    double* c_out = reinterpret_cast<double*>(PyArray_DATA(np_arr_copy));
+    EXPECT_TRUE(c_out[0] == 25)<< c_out[0];
+    EXPECT_TRUE(c_out[1] == 1.0) << c_out[1]; 
+}
+
+
+
+// Work in progress
 
 TEST_F(NumpyAPITests, PyArray_NewFromDescr_Test)
 {
@@ -176,7 +295,6 @@ TEST_F(NumpyAPITests, PyArray_NewFromDescr_Test)
     // ASSERT_TRUE(PyArray_TYPE(np_arr) == NPY_LONGDOUBLE );   //Checks the type of the object is correct. 
 
 }
-
 
 TEST_F(NumpyAPITests, Types_Test)
 {
@@ -210,9 +328,6 @@ TEST_F(NumpyAPITests, Types_Test)
     // 3D
     // Varibles -> Dim7  -- Come up with an example?
     // Vector type -> as invidual components
-
-
-
 
     // NPY_BOOL=0,
     // NPY_BYTE

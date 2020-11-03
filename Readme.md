@@ -2,6 +2,17 @@
 
 ## List of Examples
 
+Embedding Python in C with Python C API
+
+Python2 Examples
+- Shout Filter Example (Broken)
+
+Python3 Examples
+- pyrun_simplestring
+- pyrun_anyfile
+- arguements_example
+- extendingEmbeddedPython
+
 ## List of Other Useful Git Repositories
 
 - pythonqt [https://mevislab.github.io/pythonqt]

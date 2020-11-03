@@ -1,4 +1,5 @@
-/.vscode
-
+.vscode
+googletest
 *__pycache__
 */build
+build

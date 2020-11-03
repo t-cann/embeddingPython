@@ -1,6 +1,6 @@
-//#define NPY_NO_DEPRECATED_API  NPY_1_9_API_VERSION //TODO Resolve issue with old api files but frames python os ??? https://numpy.org/devdocs/reference/c-api/deprecations.html
+#define NPY_NO_DEPRECATED_API  NPY_1_9_API_VERSION //TODO Resolve issue with old api files but frames python os ??? https://numpy.org/devdocs/reference/c-api/deprecations.html
 #include "pyConsole.h"
-// #include <numpy/arrayobject.h>
+#include <numpy/arrayobject.h>
 
 // References:
 //https://ubuverse.com/embedding-the-python-interpreter-in-a-qt-application/
@@ -99,11 +99,11 @@ void pyConsole::runString(const char *command){
     PyRun_SimpleString(command);
 }
 
-/**
- * @brief Takes in a QString which is run in python and the output is captured and returned.
- * 
- * @param command 
- * @return QString 
+// /**
+//  * @brief Takes in a QString which is run in python and the output is captured and returned.
+//  * 
+//  * @param command 
+//  * @return QString 
 //  */
 // QString pyConsole::pyRun(QString command){
 //     QString input =  command; //"\"" + command + "\"";
@@ -183,7 +183,6 @@ void pyConsole::displayDateandTime(){
     );
 
     // PyRun_SimpleString("1+3"); //no output 
-
     // //PyRun_SimpleString("print(1+1)"); //this is ok stdout
     // //PyRun_SimpleString("1+a"); //this creates an error
     // //qDebug().noquote() <<"Catcher Output:\n\n" + pyConsole::ObjectToString(output).toUtf8(); // In Unicode format \n new line charaters how to remove?

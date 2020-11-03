@@ -14,7 +14,7 @@ add_subdirectory(googletest) #https://www.eriksmistad.no/getting-started-with-go
 find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
 set(Headers
-  src/pyConsole.hpp
+  src/pyConsole.h
 )
 set(Sources
   src/pyConsole.cpp
@@ -24,6 +24,7 @@ add_library(pyConsole STATIC ${Sources} ${Headers})
 
 target_link_libraries(pyConsole
   Python3::Python
+  Python3::NumPy
 )
 
 add_subdirectory(test)

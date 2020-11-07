@@ -31,6 +31,7 @@ before_script:
   - cd -
 
   # Compiling and adding a user define python module
+  - ls -la
   - export PYTHONPATH=${PYTHONPATH}:./scripts/modules
   - python ./scripts/modules/mymodule.py
 

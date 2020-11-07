@@ -1,0 +1,39 @@
+# .travis.yml
+
+os: linux
+dist: focal
+
+language: cpp
+
+python:
+  - "3.8"
+
+addons:
+  apt:
+    packages:
+      - googletest
+      - qtbase5-dev
+
+
+before_script:
+  # Adding Numpy
+  - pip install numpy
+  # Build and install Google Test
+  - mkdir gtest-build
+  - cd gtest-build
+  - >
+    cmake
+    -DBUILD_GTEST:BOOL=ON
+    -DCMAKE_INSTALL_PREFIX:PATH=${TRAVIS_BUILD_DIR}/gtest
+    /usr/src/googletest
+  - cmake --build .
+  - cmake --build . --target install
+  - cd - 
+
+script:
+  - mkdir build
+  - cd build
+  - export CMAKE_PREFIX_PATH=${TRAVIS_BUILD_DIR}/gtest:${CMAKE_PREFIX_PATH}
+  - cmake ..
+  - cmake --build .
+  - ctest --output-on-failure

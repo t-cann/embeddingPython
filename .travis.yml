@@ -28,7 +28,11 @@ before_script:
     /usr/src/googletest
   - cmake --build .
   - cmake --build . --target install
-  - cd - 
+  - cd -
+
+  # Compiling and adding a user define python module
+  - export PYTHONPATH="${PYTHONPATH}:${TRAVIS_SOURCE_DIR}/scripts/modules
+  - python ${TRAVIS_SOURCE_DIR}/scripts/modules/mymodule.py
 
 script:
   - mkdir build

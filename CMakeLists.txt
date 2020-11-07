@@ -8,7 +8,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 enable_testing()
-add_subdirectory(googletest) #https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/
+# add_subdirectory(googletest) #https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/
 
 # find_package(Python2 COMPONENTS Interpreter Development)
 find_package(Python3 COMPONENTS Interpreter Development NumPy)

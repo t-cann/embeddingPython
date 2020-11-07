@@ -2,6 +2,8 @@
 # include(CTest)
 cmake_minimum_required(VERSION 3.8)
 
+find_package(GTest REQUIRED)
+
 set(This pyConsoleTests)
 
 set(Sources
@@ -10,7 +12,7 @@ set(Sources
 add_executable(${This} ${Sources})
 
 target_link_libraries(${This} PUBLIC
-    gtest_main
+    GTest::Main
     pyConsole
 )
 
@@ -27,8 +29,8 @@ set(Sources
 add_executable(${This} ${Sources})
 
 target_link_libraries(${This} PUBLIC
-    gtest_main
-    gmock
+    GTest::Main
+    GTest::GTest
 )
 
 add_test(
@@ -44,7 +46,7 @@ set(Sources
 add_executable(${This} ${Sources})
 
 target_link_libraries(${This} PUBLIC
-    gtest_main
+    GTest::Main
     Python3::Python
 )
 
@@ -61,7 +63,7 @@ set(Sources
 add_executable(${This} ${Sources})
 
 target_link_libraries(${This} PUBLIC
-    gtest_main
+    GTest::Main
     Python3::Python
     Python3::NumPy
 )
